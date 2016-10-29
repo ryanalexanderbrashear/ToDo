@@ -10,31 +10,53 @@ import UIKit
 
 class ToDoTableViewController: UITableViewController {
     
+    //MARK: - IBOutlets
     
     @IBOutlet weak var showCompleted: UISwitch!
     
+    //MARK: - Class Level Variables
+    
     let searchController = UISearchController(searchResultsController: nil)
-
     var sectionHeaders = CategoryStore.shared.getCategories()
     var readyToEdit = true
-    
     var filteredArray = [[Task]]()
     var incompleteTasks = TaskStore.shared.getIncompleteTasks()
+    let defaults = UserDefaults.standard
 
+    //MARK: - Life Cycle Functions
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
+        tableView.showsVerticalScrollIndicator = true
+        tableView.refreshControl = nil
+        
+        let completionSwitchState = defaults.data(forKey: "showCompletedSwitchState")
+        if let completionSwitchState = completionSwitchState {
+            showCompleted.isOn = (NSKeyedUnarchiver.unarchiveObject(with: completionSwitchState) as? Bool)!
+        } else {
+            showCompleted.isOn = false
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         self.navigationController?.setToolbarHidden(false, animated: true)
         sectionHeaders = CategoryStore.shared.getCategories()
         incompleteTasks = TaskStore.shared.getIncompleteTasks()
         tableView.reloadData()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let completionSwitchState = NSKeyedArchiver.archivedData(withRootObject: showCompleted.isOn)
+        defaults.set(completionSwitchState, forKey: "showCompletedSwitchState")
+    }
+    
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -126,6 +148,8 @@ class ToDoTableViewController: UITableViewController {
         } 
     }
     
+    //MARK: - Search Bar Filter Functions
+    
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         let allTasks = TaskStore.shared.getAllTasks()
         let incompleteTasks = self.incompleteTasks
@@ -137,7 +161,7 @@ class ToDoTableViewController: UITableViewController {
         tableView.reloadData()
     }
     
-    func filter(_ inputArray: [[Task]], _ searchText: String) -> [[Task]] {
+    func filter(_ inputArray: [[Task]], _ searchText: String) {
         filteredArray = []
         for _ in 0...CategoryStore.shared.getCategoryCount() {
             filteredArray.append([])
@@ -150,9 +174,8 @@ class ToDoTableViewController: UITableViewController {
                 filteredArray[i] = toAdd
             }
         }
-        return filteredArray
     }
-
+        
     //MARK: - IBActions
 
     @IBAction func edit(_ sender: AnyObject) {
@@ -167,6 +190,8 @@ class ToDoTableViewController: UITableViewController {
     
     @IBAction func saveTaskDetail(_ segue: UIStoryboardSegue) {
         let taskDetailVC = segue.source as! TaskDetailViewController
+        self.isEditing = false
+        readyToEdit = true
         if let indexPath = tableView.indexPathForSelectedRow {
             if TaskStore.shared.getTask(indexPath.section, indexPath.row).category != indexPath.section {
                 let placeholder = TaskStore.shared.getTask(indexPath.section, indexPath.row)

@@ -26,7 +26,10 @@ class TaskStore {
             for _ in 1...CategoryStore.shared.getCategoryCount() {
                 tasks.append([])
             }
-            tasks[0] = [Task(title: "Task 1", dueDate: Date(), lastModified: Date(), priority: .high, category: 0, complete: false)]
+            tasks[0] = [Task(title: "Example Task", dueDate: Date(), lastModified: Date(), priority: .high, category: 0, complete: false)]
+            tasks[1] = [Task(title: "Example Task", dueDate: Date(), lastModified: Date(), priority: .high, category: 0, complete: false)]
+            tasks[2] = [Task(title: "Example Task", dueDate: Date(), lastModified: Date(), priority: .high, category: 0, complete: false)]
+            tasks[3] = [Task(title: "Example Task", dueDate: Date(), lastModified: Date(), priority: .high, category: 0, complete: false)]
             save()
         }
     }

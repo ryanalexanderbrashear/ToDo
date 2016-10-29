@@ -46,6 +46,13 @@ class TaskDetailViewController: UIViewController {
         } else {
             imageView.isHidden = true
         }
+        
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+         view.addGestureRecognizer(tap)
+    }
+    
+    func dismissKeyboard() {
+        view.endEditing(true)
     }
 
     override func didReceiveMemoryWarning() {
@@ -84,37 +91,55 @@ class TaskDetailViewController: UIViewController {
         task.priority = task.priority.returnCase(currentSelected)
         task.image = imageView.image
         
-        let notification = UNMutableNotificationContent()
-        notification.title = task.title
-        notification.subtitle = ""
-        notification.categoryIdentifier = "Alert"
-        notification.sound = UNNotificationSound.default()
-        notification.body = "TASK IS DUE"
-        let notificationDate = task.dueDate.timeIntervalSinceNow
-        
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: notificationDate, repeats: false)
-        
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: notification, trigger: trigger)
-        UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current().add(request)
+        if task.dueDate > Date() {
+            let notification = UNMutableNotificationContent()
+            notification.title = task.title
+            notification.subtitle = ""
+            notification.categoryIdentifier = "Alert"
+            notification.sound = UNNotificationSound.default()
+            notification.body = "Have you completed your task?"
+            let notificationDate = task.dueDate.timeIntervalSinceNow
+            
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: notificationDate, repeats: false)
+            
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: notification, trigger: trigger)
+            UNUserNotificationCenter.current().delegate = self
+            UNUserNotificationCenter.current().add(request)
+        }
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        var returnValue = true
+        var shouldContinue = true
         if identifier == "saveTaskDetail" {
-            taskTitleField.text != "" ? (returnValue = true) : (returnValue = false)
-            if returnValue == false {
-                let alert = UIAlertController(title: "Error", message: "You must enter a value for the task title!", preferredStyle: UIAlertControllerStyle.alert)
-                alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-
-            }
+            shouldContinue = checkTextField()
+            shouldContinue = checkDueDate()
         }
-        return returnValue
+        return shouldContinue
+    }
+    
+    func checkTextField() -> Bool {
+        var textFieldNotEmpty = true
+        taskTitleField.text != "" ? (textFieldNotEmpty = true) : (textFieldNotEmpty = false)
+        if !textFieldNotEmpty {
+            let alert = UIAlertController(title: "Error", message: "You must enter a value for the task title!", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+        return textFieldNotEmpty
+    }
+    
+    func checkDueDate() -> Bool {
+        let dueDateUsable = datePicker.date.compare(Date()) == .orderedDescending
+         if !dueDateUsable {
+            let alert = UIAlertController(title: "Error", message: "You cannot enter a due date that is already in the past!", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+        return dueDateUsable
     }
     
     @IBAction func choosePhoto(_ sender: AnyObject) {
-        let alert = UIAlertController(title: "Picture", message: "Choose a picture type", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Picture", message: "Choose a picture source: ", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (action) in self.showPicker(.camera) }))
         alert.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { (action) in self.showPicker(.photoLibrary) }))
         present(alert, animated: true, completion: nil)

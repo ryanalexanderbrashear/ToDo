@@ -22,7 +22,6 @@ class CategoryStore {
             categories.append(Category("Work"))
             categories.append(Category("Shopping"))
             categories.append(Category("Other"))
-            categories.append(Category("Housework"))
             save()
         }
     }

@@ -8,16 +8,15 @@
 
 import UIKit
 
-class EditCategoriesTableViewController: UITableViewController {
+class EditCategoriesTableViewController: UITableViewController, UITextFieldDelegate {
     
     @IBOutlet weak var categoryToAdd: UITextField!
 
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.categoryToAdd.delegate = self
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -52,6 +51,7 @@ class EditCategoriesTableViewController: UITableViewController {
         if categoryToAdd.text != "" {
             CategoryStore.shared.addCategory(categoryToAdd.text!)
             TaskStore.shared.addNewSection()
+            categoryToAdd.resignFirstResponder()
             tableView.reloadData()
         }
         categoryToAdd.text = ""
