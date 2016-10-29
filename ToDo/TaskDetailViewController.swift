@@ -49,6 +49,8 @@ class TaskDetailViewController: UIViewController {
         
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
          view.addGestureRecognizer(tap)
+        
+        taskTitleField.autocapitalizationType = .sentences
     }
     
     func dismissKeyboard() {

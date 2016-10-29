@@ -15,6 +15,7 @@ class EditCategoriesTableViewController: UITableViewController, UITextFieldDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         self.categoryToAdd.delegate = self
+        categoryToAdd.autocapitalizationType = .sentences
     }
     
     override func didReceiveMemoryWarning() {
