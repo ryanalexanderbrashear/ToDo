@@ -11,15 +11,10 @@ import UIKit
 class TaskTableViewCell: UITableViewCell {
     
     @IBOutlet weak var taskTitleLabel: UILabel!
-    
     @IBOutlet weak var taskDueDateLabel: UILabel!
-    
     @IBOutlet weak var taskPriorityLabel: UILabel!
-    
     @IBOutlet weak var taskLastModifiedLabel: UILabel!
-    
     @IBOutlet weak var taskIsCompleteSwitch: UISegmentedControl!
-    
     
     weak var task: Task!
     

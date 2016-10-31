@@ -51,7 +51,7 @@ class CategoryStore {
     
     func getCategories() -> [String] {
         var resultArray = [String]()
-        if ((categories.count - 1) >= 0) {
+        if categories.count > 0 {
             for i in 0...categories.count - 1 {
                 resultArray.append(categories[i].name)
             }

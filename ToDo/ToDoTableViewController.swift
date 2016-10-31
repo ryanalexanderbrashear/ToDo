@@ -56,8 +56,6 @@ class ToDoTableViewController: UITableViewController {
         defaults.set(completionSwitchState, forKey: "showCompletedSwitchState")
     }
     
-    
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

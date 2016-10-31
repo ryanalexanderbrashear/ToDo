@@ -13,15 +13,10 @@ import UserNotificationsUI
 class TaskDetailViewController: UIViewController {
 
     @IBOutlet weak var taskTitleField: UITextField!
-    
     @IBOutlet weak var datePicker: UIDatePicker!
-    
     @IBOutlet weak var categoryPicker: UIPickerView!
-    
     @IBOutlet weak var completionSwitch: UISwitch!
-    
     @IBOutlet weak var prioritySelector: UISegmentedControl!
-    
     @IBOutlet weak var imageView: UIImageView!
     
     var gestureRecognizer: UITapGestureRecognizer!
@@ -89,8 +84,8 @@ class TaskDetailViewController: UIViewController {
         task.dueDate = datePicker.date
         task.lastModified = Date()
         task.complete = completionSwitch.isOn
-        let currentSelected = prioritySelector.selectedSegmentIndex
-        task.priority = task.priority.returnCase(currentSelected)
+        task.priorityValue = prioritySelector.selectedSegmentIndex
+        task.priority = task.priority.returnCase(task.priorityValue)
         task.image = imageView.image
         
         if task.dueDate > Date() {
@@ -111,10 +106,11 @@ class TaskDetailViewController: UIViewController {
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        var shouldContinue = true
+        var shouldContinue = false
         if identifier == "saveTaskDetail" {
-            shouldContinue = checkTextField()
-            shouldContinue = checkDueDate()
+            if checkTextField() && checkDueDate() {
+                shouldContinue = true
+            }
         }
         return shouldContinue
     }
@@ -164,13 +160,13 @@ extension TaskDetailViewController: UIPickerViewDataSource, UIPickerViewDelegate
 
 extension TaskDetailViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true, completion: nil) //close the image picker when the user clicks cancel
+        picker.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        picker.dismiss(animated: true, completion: nil) //still want to close the picker even when picking an image
+        picker.dismiss(animated: true, completion: nil)
         
-        if let image = info["UIImagePickerControllerOriginalImage"] as? UIImage { //if we actually get an image back, do this
+        if let image = info["UIImagePickerControllerOriginalImage"] as? UIImage {
             let maxSize: CGFloat = 512
             let scale = maxSize / image.size.width
             let newHeight = image.size.height * scale
@@ -194,5 +190,4 @@ extension TaskDetailViewController: UINavigationControllerDelegate, UIImagePicke
 }
 
 extension TaskDetailViewController: UNUserNotificationCenterDelegate {
-    
 }

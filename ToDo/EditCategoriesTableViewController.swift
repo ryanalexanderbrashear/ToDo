@@ -48,16 +48,6 @@ class EditCategoriesTableViewController: UITableViewController, UITextFieldDeleg
         }
     }
     
-    @IBAction func addCategory(_ sender: AnyObject) {
-        if categoryToAdd.text != "" {
-            CategoryStore.shared.addCategory(categoryToAdd.text!)
-            TaskStore.shared.addNewSection()
-            categoryToAdd.resignFirstResponder()
-            tableView.reloadData()
-        }
-        categoryToAdd.text = ""
-    }
-    
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "editCategory" {
@@ -67,12 +57,24 @@ class EditCategoriesTableViewController: UITableViewController, UITextFieldDeleg
         }
     }
     
+    //MARK: - IBActions
+    
     @IBAction func saveCategoryDetail(_ segue: UIStoryboardSegue) {
         let taskDetailVC = segue.source as! CategoryDetailViewController
         if let indexPath = tableView.indexPathForSelectedRow {
             CategoryStore.shared.updateCategory(indexPath.row, taskDetailVC.category.name)
             tableView.reloadData()
         }
+    }
+    
+    @IBAction func addCategory(_ sender: AnyObject) {
+        if categoryToAdd.text != "" {
+            CategoryStore.shared.addCategory(categoryToAdd.text!)
+            TaskStore.shared.addNewSection()
+            categoryToAdd.resignFirstResponder()
+            tableView.reloadData()
+        }
+        categoryToAdd.text = ""
     }
 }
 
